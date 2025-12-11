@@ -1,0 +1,4 @@
+__pycache__/
+.vscode
+venv
+adversarial_games.egg-info

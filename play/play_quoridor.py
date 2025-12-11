@@ -1,0 +1,122 @@
+from games.quoridor import Quoridor
+from agents.minimax import QuoridorMiniMax
+from agents.random import RandomAgent
+from agents.human import HumanAgent
+from agents.mcts import MCTSAgent
+import argparse
+
+
+def initialize_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+
+    # Add player choice arguments
+    parser.add_argument('--p1', type=str, 
+                        help='Choice of player 1.', 
+                        choices=['QuoridorMiniMax', 'RandomAgent', 'HumanAgent', 'MCTSAgent'],
+                        default='MCTSAgent'
+    )
+    parser.add_argument('--p2', type=str, 
+                        help='Choice of player 2.', 
+                        choices=['QuoridorMiniMax', 'RandomAgent', 'HumanAgent', 'MCTSAgent'],
+                        default='RandomAgent'
+    )
+
+    # Add player settings
+    parser.add_argument('--p1_depth', type=int, 
+                        help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
+                        default=2
+    )
+    parser.add_argument('--p2_depth', type=int, 
+                        help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
+                        default=2   
+    )
+    parser.add_argument('--p1_rollouts', type=int,
+                        help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',
+                        default=1000
+    )
+    parser.add_argument('--p2_rollouts', type=int,
+                        help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',
+                        default=1000
+    )
+
+
+    # Add Quoridor game settings
+    parser.add_argument('--s', type=int, 
+                        help='Size of Quoridor game board.',
+                        choices=[3, 5, 9],
+                        default=5
+    )
+    parser.add_argument('--w', type=int,
+                        help='Number of walls',
+                        default=5
+    )
+
+    return parser
+
+
+def play(args):
+    # Setup game
+    game = Quoridor(size=args.s, numwalls=args.w)
+    state = game.start_state()
+    print('The game has begun!')
+    print()
+    game.visualize(state)
+    print()
+
+    # Initialize players
+    p1_cls = globals()[args.p1]
+    p1 = p1_cls(game=game, depth=args.p1_depth, rollouts=args.p1_rollouts, turn=1)
+
+    p2_cls = globals()[args.p2]
+    p2 = p2_cls(game=game, depth=args.p2_depth, rollouts=args.p2_rollouts, turn=2)
+
+    # Begin play
+    while not game.is_end(state):
+        
+        # Get action from player 1
+        print(f'Player 1: {args.p1}\'s turn.')
+        action = p1.action(state)
+        print(f'Player 1: {args.p1} plays: {action}')
+        print()
+
+        # Update board
+        state = game.successor(state, action)
+        game.visualize(state)
+        print()
+
+        # Check if game has ended and print message
+        if game.is_end(state):
+            outcome = f'Player 1: {args.p1} is victorious.' if game.utility(state) == game.win_bonus\
+                else f'Player 2: {args.p2} is victorious.' if game.utility(state) == -game.win_bonus\
+                else 'It is a draw.'
+            print(f'The game has ended. {outcome}')
+            break
+
+        # Get action from player 2
+        print(f'Player 2: {args.p2}\'s turn.')
+        action = p2.action(state)
+        print(f'Player 2: {args.p2} plays: {action}')
+        print()
+
+        # Update board
+        state = game.successor(state, action)
+        game.visualize(state)
+        print()
+
+        # Check if game has ended and print message
+        if game.is_end(state):
+            outcome = f'Player 1: {args.p1} is victorious.' if game.utility(state) == game.win_bonus\
+                else f'Player 2: {args.p2} is victorious.' if game.utility(state) == -game.win_bonus\
+                else 'It is a draw.'
+            print(f'The game has ended. {outcome}')
+            break
+
+
+def main():
+    parser = initialize_parser()
+    args = parser.parse_args()
+    play(args)
+
+
+if __name__ == '__main__':
+    main()
