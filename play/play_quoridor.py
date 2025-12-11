@@ -23,11 +23,11 @@ def initialize_parser() -> argparse.ArgumentParser:
     # Add player settings
     parser.add_argument('--p1_depth', type=int, 
                         help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
-                        default=2
+                        default=None
     )
     parser.add_argument('--p2_depth', type=int, 
                         help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
-                        default=2   
+                        default=None  
     )
     parser.add_argument('--p1_rollouts', type=int,
                         help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',

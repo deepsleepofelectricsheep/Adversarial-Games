@@ -194,10 +194,12 @@ class Quoridor(AdversarialGame):
                 return legal_placements
 
         for candidate in self.wall_placement_candidates:
-           if candidate not in state.h_walls:
-               successor = self.successor(state, ('h_wall', candidate))
-               if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
-                   legal_placements.append(candidate)
+            if candidate not in state.h_walls:
+                if candidate not in [(wall[0]+1, wall[1]) for wall in state.h_walls]:
+                    if candidate not in state.v_walls:
+                        successor = self.successor(state, ('h_wall', candidate))
+                        if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                            legal_placements.append(candidate)
 
         return legal_placements
     
@@ -214,10 +216,12 @@ class Quoridor(AdversarialGame):
                 return legal_placements
 
         for candidate in self.wall_placement_candidates:
-           if candidate not in state.v_walls:
-               successor = self.successor(state, ('v_wall', candidate))
-               if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
-                   legal_placements.append(candidate)
+            if candidate not in state.v_walls:
+                if candidate not in [(wall[0], wall[1]+1) for wall in state.v_walls]:
+                    if candidate not in state.h_walls:
+                        successor = self.successor(state, ('v_wall', candidate))
+                        if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                            legal_placements.append(candidate)
 
         return legal_placements  
 

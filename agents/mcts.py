@@ -26,12 +26,12 @@ def ucb1(node: Node, C: float = math.sqrt(2)) -> float:
 
 # MCTS Agent
 class MCTSAgent(Agent):
-    def __init__(self, game: Any, name: str = 'MCTSAgent', player: int = 1, rollouts: int = 100, depth: int = float('inf'), *args, **kwargs) -> None:
+    def __init__(self, game: Any, name: str = 'MCTSAgent', player: int = 1, rollouts: int = 100, depth: int = None, *args, **kwargs) -> None:
         self.game = game
         self.name = name
         self.player = player
         self.rollouts = rollouts
-        self.depth = depth
+        self.depth = depth if depth else float('inf')
 
     def action(self, state: Any) -> Any:
 
