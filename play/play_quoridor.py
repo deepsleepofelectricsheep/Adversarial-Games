@@ -2,6 +2,7 @@ from games.quoridor import Quoridor
 from agents.random import RandomAgent
 from agents.human import HumanAgent
 from agents.mcts import MCTSAgent
+from agents.minmax import QuoridorAlphaBetaAgent
 import argparse
 
 
@@ -11,12 +12,12 @@ def initialize_parser() -> argparse.ArgumentParser:
     # Add player choice arguments
     parser.add_argument('--p1', type=str, 
                         help='Choice of player 1.', 
-                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent'],
+                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorAlphaBetaAgent'],
                         default='MCTSAgent'
     )
     parser.add_argument('--p2', type=str, 
                         help='Choice of player 2.', 
-                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent'],
+                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorAlphaBetaAgent'],
                         default='RandomAgent'
     )
 
@@ -31,11 +32,11 @@ def initialize_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument('--p1_rollouts', type=int,
                         help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',
-                        default=1000
+                        default=100
     )
     parser.add_argument('--p2_rollouts', type=int,
                         help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',
-                        default=1000
+                        default=100
     )
 
 

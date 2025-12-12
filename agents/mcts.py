@@ -18,7 +18,7 @@ class Node:
 
 
 # UCB1 (Upper confidence bounds applied to trees)
-def ucb1(node: Node, C: float = math.sqrt(2)) -> float:
+def ucb1(node: Node, C: float = math.sqrt(1)) -> float:
     if node.N > 0:
         return node.U / node.N + C * math.sqrt(math.log(node.parent.N) / node.N)
     return float('inf')
