@@ -99,8 +99,8 @@ class Quoridor(AdversarialGame):
                 node = frontier.pop()
                 # Get children
                 state = State(
-                    p1=node if player==1 else p1,
-                    p2=node if player==2 else p2,
+                    p1=node if player==1 else p2,
+                    p2=node if player==2 else p1,
                     p1_numwalls=0,
                     p2_numwalls=0,
                     player=player,
