@@ -55,5 +55,5 @@ class QuoridorAlphaBetaAgent(AlphaBetaAgent):
         p1_dist_to_goal = self.game.size - 1 - state.p1[1]
         p2_dist_to_goal = state.p2[1]
         if player == 1:
-            return - p1_dist_to_goal + 1.5 * p2_dist_to_goal
-        return - p2_dist_to_goal + 1.5 * p1_dist_to_goal
+            return (- 0.5 * p1_dist_to_goal + 0.75 * p2_dist_to_goal) / self.game.size
+        return (- 0.5 * p2_dist_to_goal + 0.75 * p1_dist_to_goal) / self.game.size

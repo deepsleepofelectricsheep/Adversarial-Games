@@ -62,6 +62,21 @@ def initialize_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def pprint_actions(game, state):
+        # Get all possible actions
+        actions = game.actions(state)
+        pawn_moves = [move for (move_type, move) in actions if move_type=='pawn']
+        h_wall_placements = [move for (move_type, move) in actions if move_type=='h_wall']
+        v_wall_placements = [move for (move_type, move) in actions if move_type=='v_wall']
+        # Print all possible actions for user
+        if len(pawn_moves) > 0:
+            print(f'Pawn moves: {str(pawn_moves)[1: -1]}')
+        if len(h_wall_placements) > 0:
+            print(f'H. wall placements: {str(h_wall_placements)[1: -1]}')
+        if len(v_wall_placements) > 0:
+            print(f'V. wall placements: {str(v_wall_placements)[1: -1]}')
+
+
 def play(args):
     # Setup game
     g_cls = globals()[args.g]
@@ -84,6 +99,7 @@ def play(args):
         
         # Get action from player 1
         print(f'Player 1: {args.p1}\'s turn.')
+        pprint_actions(game, state)
         action = p1.action(state)
         print(f'Player 1: {args.p1} plays: {action}')
         print()
@@ -103,6 +119,7 @@ def play(args):
 
         # Get action from player 2
         print(f'Player 2: {args.p2}\'s turn.')
+        pprint_actions(game, state)
         action = p2.action(state)
         print(f'Player 2: {args.p2} plays: {action}')
         print()

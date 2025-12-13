@@ -242,7 +242,7 @@ class Quoridor(AdversarialGame):
                 if candidate not in [(wall[0]+1, wall[1]) for wall in state.h_walls]:
                     if candidate not in state.v_walls:
                         successor = self.successor(state, ('h_wall', candidate))
-                        if self._path_exists_bfs(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                        if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
                             legal_placements.append(candidate)
 
         return legal_placements
@@ -264,7 +264,7 @@ class Quoridor(AdversarialGame):
                 if candidate not in [(wall[0], wall[1]+1) for wall in state.v_walls]:
                     if candidate not in state.h_walls:
                         successor = self.successor(state, ('v_wall', candidate))
-                        if self._path_exists_bfs(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                        if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
                             legal_placements.append(candidate)
 
         return legal_placements  
