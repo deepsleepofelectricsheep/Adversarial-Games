@@ -15,7 +15,10 @@ class AdversarialGame:
         raise NotImplementedError()
     
     def utility(self, state: Any, player: int) -> float:
-        raise NotImplementedError
+        raise NotImplementedError()
     
     def is_end(self, state: Any) -> bool:
+        raise NotImplementedError()
+    
+    def visualize(self, state: Any) -> bool:
         raise NotImplementedError()

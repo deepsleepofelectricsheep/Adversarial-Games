@@ -1,7 +1,7 @@
 from games.quoridor import State as QuoridorState
 from games.quoridor import Quoridor
 from agents.random import RandomAgent
-from agents.minimax import MiniMax
+from agents.minmax import QuoridorAlphaBetaAgent
 
 
 def test_game_state():
@@ -107,7 +107,7 @@ def test_agents():
     # Check if MiniMax agent returns a legal action
     game = Quoridor(size=5, numwalls=5)
     start_state = game.start_state()
-    minimax_agent = MiniMax(game=game)
+    minimax_agent = QuoridorAlphaBetaAgent(game=game)
     possible_actions = game.actions(start_state)
     chosen_action = minimax_agent.action(start_state)
     if chosen_action not in possible_actions:

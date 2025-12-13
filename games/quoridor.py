@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple, Any
 from games.base import AdversarialGame
 import random
+from heapq import heappush, heappop
 
 
 @dataclass(frozen=True)
@@ -24,7 +25,7 @@ class Quoridor(AdversarialGame):
         self.size = size
         self.numwalls = numwalls
         self.directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        self.win_bonus = 100
+        self.win_bonus = 1
 
         # Precompute valid wall positions
         self.wall_placement_candidates = [
@@ -87,7 +88,7 @@ class Quoridor(AdversarialGame):
 
         return False
     
-    def _path_exists(self, p1: Tuple[int, int], p2: Tuple[int, int], h_walls: list[Tuple[int, int]], v_walls: list[Tuple[int, int]]) -> bool:
+    def _path_exists_bfs(self, p1: Tuple[int, int], p2: Tuple[int, int], h_walls: list[Tuple[int, int]], v_walls: list[Tuple[int, int]]) -> bool:
         # Implement BFS to ensure at least 1 path exists to the goal
         def _bfs(start: Tuple[int, int], goal: int, player: int) -> bool:
             node = start
@@ -120,6 +121,49 @@ class Quoridor(AdversarialGame):
         
         # If there's a path for both players, then return true, otherwise false
         if _bfs(p1, self.size-1, 1) and _bfs(p2, 0, 2):
+            return True 
+        
+        return False
+    
+    def _path_exists_astar(self, p1: Tuple[int, int], p2: Tuple[int, int], h_walls: list[Tuple[int, int]], v_walls: list[Tuple[int, int]]) -> bool:
+        # Implement BFS to ensure at least 1 path exists to the goal
+        def _astar(start: Tuple[int, int], goal: int, player: int) -> bool:
+            node = start
+            if node[1] == goal:
+                return True
+            frontier = []
+            heappush(frontier, (0, node))
+            reached = [node]
+            while len(frontier) > 0:
+                g, node = heappop(frontier)
+                # Get children
+                state = State(
+                    p1=node if player==1 else p2,
+                    p2=node if player==2 else p1,
+                    p1_numwalls=0,
+                    p2_numwalls=0,
+                    player=player,
+                    h_walls=h_walls,
+                    v_walls=v_walls
+                )
+                actions = self.actions(state)
+                for action in actions:
+                    successor = self.successor(state, action)
+                    s = successor.p1 if player==1 else successor.p2
+                    if s[1] == goal:
+                        return True
+                    if s not in reached:
+                        reached.append(s)
+                        h = _heuristic(s, goal)
+                        heappush(frontier, (g + 1 + h, s))
+
+            return False
+        
+        def _heuristic(start: Tuple[int, int], goal: int) -> int:
+            return goal - start[1]
+        
+        # If there's a path for both players, then return true, otherwise false
+        if _astar(p1, self.size-1, 1) and _astar(p2, 0, 2):
             return True 
         
         return False
@@ -198,7 +242,7 @@ class Quoridor(AdversarialGame):
                 if candidate not in [(wall[0]+1, wall[1]) for wall in state.h_walls]:
                     if candidate not in state.v_walls:
                         successor = self.successor(state, ('h_wall', candidate))
-                        if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                        if self._path_exists_bfs(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
                             legal_placements.append(candidate)
 
         return legal_placements
@@ -220,7 +264,7 @@ class Quoridor(AdversarialGame):
                 if candidate not in [(wall[0], wall[1]+1) for wall in state.v_walls]:
                     if candidate not in state.h_walls:
                         successor = self.successor(state, ('v_wall', candidate))
-                        if self._path_exists(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                        if self._path_exists_bfs(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
                             legal_placements.append(candidate)
 
         return legal_placements  

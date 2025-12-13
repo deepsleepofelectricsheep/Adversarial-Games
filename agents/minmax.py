@@ -4,7 +4,7 @@ from typing import Any, Tuple
     
 
 class AlphaBetaAgent(Agent):
-    def __init__(self, game: Any, name: str = 'MinMaxAgent', player: int = 1, depth: int = 3, *args, **kwargs) -> None:
+    def __init__(self, game: Any, name: str = 'MinMaxAgent', player: int = 1, depth: int = 4, *args, **kwargs) -> None:
         self.game = game
         self.name = name
         self.player = player
@@ -25,7 +25,7 @@ class AlphaBetaAgent(Agent):
             if s.player == self.player:
                 best_value, best_action = float('-inf'), None
                 for action, successor in actions_and_successors:
-                    value, _ = V_alphabeta(successor, d)
+                    value, _ = V_alphabeta(successor, d-1, a, b)
                     if value > best_value:
                         best_value, best_action = value, action
                     a = max(a, best_value)
@@ -36,7 +36,7 @@ class AlphaBetaAgent(Agent):
             if s.player != self.player:
                 worst_value, worst_action = float('inf'), None
                 for action, successor in actions_and_successors:
-                    value, _ = V_alphabeta(successor, d-1)
+                    value, _ = V_alphabeta(successor, d-1, a, b)
                     if value < worst_value:
                         worst_value, worst_action = value, action
                     b = min(b, worst_value)

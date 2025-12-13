@@ -1,23 +1,31 @@
 from games.quoridor import Quoridor
+from games.tictactoe import TicTacToe
 from agents.random import RandomAgent
 from agents.human import HumanAgent
-from agents.mcts import MCTSAgent
-from agents.minmax import QuoridorAlphaBetaAgent
+from agents.mcts import MCTSAgent, QuoridorMCTSAgent
+from agents.minmax import QuoridorAlphaBetaAgent, AlphaBetaAgent
 import argparse
 
 
 def initialize_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
 
+    # Add game choice arguments
+    parser.add_argument('--g', type=str,
+                        help='Choice of game.',
+                        choices=['Quoridor', 'TicTacToe'],
+                        default='Quoridor'
+    )
+
     # Add player choice arguments
     parser.add_argument('--p1', type=str, 
                         help='Choice of player 1.', 
-                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorAlphaBetaAgent'],
+                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorMCTSAgent', 'AlphaBetaAgent', 'QuoridorAlphaBetaAgent'],
                         default='MCTSAgent'
     )
     parser.add_argument('--p2', type=str, 
                         help='Choice of player 2.', 
-                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorAlphaBetaAgent'],
+                        choices=['RandomAgent', 'HumanAgent', 'MCTSAgent', 'QuoridorMCTSAgent', 'AlphaBetaAgent', 'QuoridorAlphaBetaAgent'],
                         default='RandomAgent'
     )
 
@@ -56,7 +64,8 @@ def initialize_parser() -> argparse.ArgumentParser:
 
 def play(args):
     # Setup game
-    game = Quoridor(size=args.s, numwalls=args.w)
+    g_cls = globals()[args.g]
+    game = g_cls(size=args.s, numwalls=args.w)
     state = game.start_state()
     print('The game has begun!')
     print()
@@ -65,10 +74,10 @@ def play(args):
 
     # Initialize players
     p1_cls = globals()[args.p1]
-    p1 = p1_cls(game=game, depth=args.p1_depth, rollouts=args.p1_rollouts, turn=1)
+    p1 = p1_cls(game=game, depth=args.p1_depth, rollouts=args.p1_rollouts, player=1)
 
     p2_cls = globals()[args.p2]
-    p2 = p2_cls(game=game, depth=args.p2_depth, rollouts=args.p2_rollouts, turn=2)
+    p2 = p2_cls(game=game, depth=args.p2_depth, rollouts=args.p2_rollouts, player=2)
 
     # Begin play
     while not game.is_end(state):

@@ -18,10 +18,10 @@ pip install -e .
 ## Usage
 
 ### Example
-To start a game of Quoridor between an MCTS agent and a Random agent on a board of size 5, run the following command from the root of the directory:
+To start a game of Quoridor between an MCTS agent and an Alpha-beta agent on a board of size 5 with 5 available walls, run the following command from the root of the directory:
 
 ```bash
-python play/play_quoridor.py --p1 MCTSAgent --p2 RandomAgent --s 5
+python play/play_game.py --p1 QuoridorMCTSAgent --p1_rollouts 100 --p2 QuoridorAlphaBetaAgent --s 5 --w 5 --p1_depth 50
 ```
 
 ## Acknowledgements
