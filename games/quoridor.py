@@ -160,7 +160,7 @@ class Quoridor(AdversarialGame):
             return False
         
         def _heuristic(start: Tuple[int, int], goal: int) -> int:
-            return goal - start[1]
+            return abs(goal - start[1])
         
         # If there's a path for both players, then return true, otherwise false
         if _astar(p1, self.size-1, 1) and _astar(p2, 0, 2):
@@ -240,10 +240,11 @@ class Quoridor(AdversarialGame):
         for candidate in self.wall_placement_candidates:
             if candidate not in state.h_walls:
                 if candidate not in [(wall[0]+1, wall[1]) for wall in state.h_walls]:
-                    if candidate not in state.v_walls:
-                        successor = self.successor(state, ('h_wall', candidate))
-                        if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
-                            legal_placements.append(candidate)
+                    if candidate not in [(wall[0]-1, wall[1]) for wall in state.h_walls]:
+                        if candidate not in state.v_walls:
+                            successor = self.successor(state, ('h_wall', candidate))
+                            if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                                legal_placements.append(candidate)
 
         return legal_placements
     
@@ -262,10 +263,11 @@ class Quoridor(AdversarialGame):
         for candidate in self.wall_placement_candidates:
             if candidate not in state.v_walls:
                 if candidate not in [(wall[0], wall[1]+1) for wall in state.v_walls]:
-                    if candidate not in state.h_walls:
-                        successor = self.successor(state, ('v_wall', candidate))
-                        if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
-                            legal_placements.append(candidate)
+                    if candidate not in [(wall[0], wall[1]-1) for wall in state.v_walls]:
+                        if candidate not in state.h_walls:
+                            successor = self.successor(state, ('v_wall', candidate))
+                            if self._path_exists_astar(successor.p1, successor.p2, successor.h_walls, successor.v_walls):
+                                legal_placements.append(candidate)
 
         return legal_placements  
 

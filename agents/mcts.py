@@ -7,12 +7,12 @@ import random
         
 
 class Node:
-    def __init__(self, state: Any, children: dict = {}, parent: Any = None, U: float = 0, N: float = 0):
+    def __init__(self, state: Any, parent: Any = None, U: float = 0, N: float = 0):
         self.state = state
-        self.children = children
         self.parent = parent
         self.U = U
         self.N = N
+        self.children = {}
 
 
 def ucb1(n: Node, c: float = 1.4) -> float:
@@ -22,12 +22,13 @@ def ucb1(n: Node, c: float = 1.4) -> float:
         
 
 class MCTSAgent:
-    def __init__(self, game: Any, name: str = 'MCTSAgent', player: int = 1, rollouts: int = 100, depth: int = 60, *args, **kwargs) -> None:
+    def __init__(self, game: Any, name: str = 'MCTSAgent', player: int = 1, rollouts: int = 100, depth: int = 60, policy: str = None, *args, **kwargs) -> None:
         self.game = game
         self.name = name
         self.rollouts = rollouts
-        self.depth = depth
+        self.depth = depth if depth else 75
         self.player = player
+        self._policy = policy if policy else 'random'
 
     def action(self, state: Any):
 
@@ -45,13 +46,14 @@ class MCTSAgent:
             return select(n)
 
         def simulate(s: Any) -> float:
-            player = s.player
+            player = self.game.player(s)
             d = 0
             while not self.game.is_end(s) and d < self.depth:
                 d += 1
                 action = self.policy(s)
                 s = self.game.successor(s, action)
             value = self.game.utility(s, player)
+            value *= (self.depth - d + 1) / self.depth # Winning quickly is better
             return -value
 
         def backprop(r: float, n: Node):
@@ -75,11 +77,26 @@ class MCTSAgent:
     
 
 class QuoridorMCTSAgent(MCTSAgent):
-    def policy(self, s: Any) -> Tuple[str, Tuple[int, int]]:
-        # Prioritize pawn moves in the direction of the goal when possible
-        direction = (0, 1) if s.player == 1 else (0, -1)
-        actions = self.game.actions(s)
-        if ('pawn', direction) in actions:
-            return ('pawn', direction)
+    def policy(self, state: Any) -> Tuple[str, Tuple[int, int]]:
+
+        def _random(state: Any) -> Tuple[str, Tuple[int, int]]:
+            return random.choice(self.game.actions(state))
+        
+        def _random_pmove(state: Any) -> Tuple[str, Tuple[int, int]]:
+            return random.choice([(move_type, move) for (move_type, move) in self.game.actions(state) if move_type=='pawn'])
+        
+        def _forward_or_random(state: Any) -> Tuple[str, Tuple[int, int]]:
+            direction = (0, 1) if state.player == 1 else (0, -1)
+            moves = self.game.actions(state)
+            return ('pawn', direction) if ('pawn', direction) in moves else random.choice(moves)
+        
+        if self._policy == 'random': 
+            return _random(state)
+        elif self._policy == 'random_pmove':
+            return _random_pmove(state)
+        elif self._policy == 'forward_or_random':
+            return _forward_or_random(state)
         else:
-            return random.choice(actions)
+            raise ValueError('Please enter valid policy for MCTS agent.')
+
+        
