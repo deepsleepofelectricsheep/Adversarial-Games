@@ -26,12 +26,17 @@ def evaluate(args: argparse.Namespace) -> None:
     p1_wins = 0
     p1_move_times = []
     p2_move_times = []
+    game_length = []
 
     for _ in range(trials):
+
+        moves = 0
 
         # Begin play
         state = game.start_state()
         while not game.is_end(state):
+
+            moves += 1
 
             start = time.time()
             action = p1.action(state)
@@ -55,6 +60,8 @@ def evaluate(args: argparse.Namespace) -> None:
                 p1_wins += 1 if game.utility(state) == game.win_bonus else 0
                 break
 
+        game_length.append(moves)
+
     # Print statistics
     print(f'Evaluation concluded.')
     print(f'\tGames played: {trials}.')
@@ -62,6 +69,7 @@ def evaluate(args: argparse.Namespace) -> None:
     print(f'\tPlayer 2: {args.p2} won {trials-p1_wins} games.')
     print(f'\tOn average, player 1 took {round(sum(p1_move_times) / len(p1_move_times), 2)} seconds per move.')
     print(f'\tOn average, player 2 took {round(sum(p2_move_times) / len(p2_move_times), 2)} seconds per move.')
+    print(f'\tThe average game was {round(sum(game_length) / len(game_length))} moves long.')
 
 
 def main():
