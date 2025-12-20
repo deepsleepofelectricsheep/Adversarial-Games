@@ -7,9 +7,13 @@ from agents.minmax import QuoridorAlphaBetaAgent, AlphaBetaAgent
 from utils import initialize_parser
 import argparse
 import time
+import os
 
 
 def evaluate(args: argparse.Namespace) -> None:
+
+    verbose = args.verbose
+
     # Setup game
     trials = args.trials
     g_cls = globals()[args.g]
@@ -21,6 +25,13 @@ def evaluate(args: argparse.Namespace) -> None:
 
     p2_cls = globals()[args.p2]
     p2 = p2_cls(game=game, depth=args.p2_depth, rollouts=args.p2_rollouts, player=2, policy=args.p2_policy)    
+
+    if verbose:
+        print()
+        print('Arguments:')
+        for arg in vars(args): 
+            print(f'\t{arg}: {vars(args)[arg]}')
+        print()
 
     # Begin trials
     p1_wins = 0
@@ -60,10 +71,14 @@ def evaluate(args: argparse.Namespace) -> None:
                 p1_wins += 1 if game.utility(state) == game.win_bonus else 0
                 break
 
+        if verbose:
+            print(f'Game #{_ + 1} has ended. Player {"1: " + args.p1 if game.utility(state) == game.win_bonus else "2: " + args.p2} won. The game lasted {moves} moves.')
+            print()
+
         game_length.append(moves)
 
     # Print statistics
-    print(f'Evaluation concluded.')
+    print(f'Evaluation concluded! Outcomes:')
     print(f'\tGames played: {trials}.')
     print(f'\tPlayer 1: {args.p1} won {p1_wins} games.')
     print(f'\tPlayer 2: {args.p2} won {trials-p1_wins} games.')

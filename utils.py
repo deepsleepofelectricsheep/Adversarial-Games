@@ -27,11 +27,11 @@ def initialize_parser() -> argparse.ArgumentParser:
     # Add player settings
     parser.add_argument('--p1_depth', type=int, 
                         help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
-                        default=None
+                        default=75
     )
     parser.add_argument('--p2_depth', type=int, 
                         help='Depth parameter for rollout. Only applicable if player is an MCTS agent.',
-                        default=None  
+                        default=75  
     )
     parser.add_argument('--p1_rollouts', type=int,
                         help='Number of rollouts for MCTS. Only applicable if player is an MCTSAgent.',
@@ -43,13 +43,13 @@ def initialize_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument('--p1_policy', type=str, 
                         help='Policy for MCTS agent playouts.',
-                        choices=['random', 'random_pmove', 'forward_or_random'],
-                        default=None
+                        choices=['random', 'random_pmove', 'forward_or_random', 'forward_or_random_pmove'],
+                        default='random'
     )
     parser.add_argument('--p2_policy', type=str, 
                         help='Policy for MCTS agent playouts.',
-                        choices=['random', 'random_pmove', 'forward_or_random'],
-                        default=None
+                        choices=['random', 'random_pmove', 'forward_or_random', 'forward_or_random_pmove'],
+                        default='random'
     )
 
     # Add Quoridor game settings
@@ -67,6 +67,10 @@ def initialize_parser() -> argparse.ArgumentParser:
     parser.add_argument('--trials', type=int,
                         help='Number of trials.',
                         default=10
+    )
+    parser.add_argument('--verbose', type=bool,
+                        help='Flag to turn on or off printing of per game outcome data.',
+                        default=True
     )
 
     return parser

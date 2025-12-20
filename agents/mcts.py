@@ -90,12 +90,20 @@ class QuoridorMCTSAgent(MCTSAgent):
             moves = self.game.actions(state)
             return ('pawn', direction) if ('pawn', direction) in moves else random.choice(moves)
         
+        def _forward_or_random_pmove(state: Any) -> Tuple[str, Tuple[int, int]]:
+            direction = (0, 1) if state.player == 1 else (0, -1)
+            moves = self.game.actions(state)
+            return ('pawn', direction) if ('pawn', direction) in moves\
+                else random.choice([(move_type, move) for (move_type, move) in self.game.actions(state) if move_type=='pawn'])
+        
         if self._policy == 'random': 
             return _random(state)
         elif self._policy == 'random_pmove':
             return _random_pmove(state)
         elif self._policy == 'forward_or_random':
             return _forward_or_random(state)
+        elif self._policy == 'forward_or_random_pmove':
+            return _forward_or_random_pmove(state)
         else:
             raise ValueError('Please enter valid policy for MCTS agent.')
 
