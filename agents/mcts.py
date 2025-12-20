@@ -4,6 +4,7 @@ from typing import Any, Tuple
 from collections import defaultdict
 import math
 import random
+from agents.utils import evaluate_state
         
 
 class Node:
@@ -22,7 +23,14 @@ def ucb1(n: Node, c: float = 1.4) -> float:
         
 
 class MCTSAgent:
-    def __init__(self, game: Any, name: str = 'MCTSAgent', player: int = 1, rollouts: int = 100, depth: int = 60, policy: str = None, *args, **kwargs) -> None:
+    def __init__(self, 
+                 game: Any, 
+                 name: str = 'MCTSAgent', 
+                 player: int = 1, 
+                 rollouts: int = 100, 
+                 depth: int = 60, 
+                 policy: str = None, 
+                 *args, **kwargs) -> None:
         self.game = game
         self.name = name
         self.rollouts = rollouts
@@ -52,7 +60,12 @@ class MCTSAgent:
                 d += 1
                 action = self.policy(s)
                 s = self.game.successor(s, action)
-            value = self.game.utility(s, player)
+
+            if self.game.is_end(s):
+                value = self.game.utility(s, player)
+            elif d == self.depth:
+                value = self.evaluate(s, player)
+
             value *= (self.depth - d + 1) / self.depth # Winning quickly is better
             return -value
 
@@ -74,6 +87,9 @@ class MCTSAgent:
 
     def policy(self, state: Any) -> Any:
         return random.choice(self.game.actions(state))
+    
+    def evaluate(self, state: Any, player: int | str) -> float:
+        return self.game.utility(state, player)
     
 
 class QuoridorMCTSAgent(MCTSAgent):
@@ -106,5 +122,6 @@ class QuoridorMCTSAgent(MCTSAgent):
             return _forward_or_random_pmove(state)
         else:
             raise ValueError('Please enter valid policy for MCTS agent.')
-
         
+    def evaluate(self, state: Any, player: int | str) -> float:
+        return evaluate_state(self.game, state, player)

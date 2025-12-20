@@ -1,5 +1,5 @@
 import argparse
-from typing import Any
+from typing import Any, Tuple
 
 
 def initialize_parser() -> argparse.ArgumentParser:
