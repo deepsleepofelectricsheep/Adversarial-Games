@@ -29,12 +29,8 @@ def evaluate_state(game: Any,
             heappush(frontier, (0, node))
             reached = [node]
 
-            distance = 0
-
             while len(frontier) > 0:
                 g, node = heappop(frontier)
-
-                distance += 1
 
                 # Get children
                 state = State(
@@ -52,14 +48,14 @@ def evaluate_state(game: Any,
                     s = successor.p1 if player==1 else successor.p2
 
                     if s[1] == goal:
-                        return distance
+                        return g + 1
 
                     if s not in reached:
                         reached.append(s)
                         h = _heuristic(s, goal)
                         heappush(frontier, (g + 1 + h, s))
                         
-            return float('-inf')     
+            return float('inf')     
 
         def _heuristic(start: Tuple[int, int], goal: int) -> int:
             return abs(goal - start[1])
@@ -71,31 +67,23 @@ def evaluate_state(game: Any,
     h_walls = state.h_walls
     v_walls = state.v_walls
 
-    p1_dist_to_goal = _path_length(game, p1, p2, h_walls, v_walls, player)
-    p2_dist_to_goal = _path_length(game, p1, p2, h_walls, v_walls, 2 if player==1 else 1)
+    my_dist = _path_length(game, p1, p2, h_walls, v_walls, player)
+    opp_dist = _path_length(game, p1, p2, h_walls, v_walls, 2 if player==1 else 1)
+    my_walls = state.p1_numwalls if player==1 else state.p2_numwalls
+    opp_walls = state.p2_numwalls if player==1 else state.p1_numwalls
+    my_progress = state.p1[1] if player==1 else game.size - 1 - state.p2[1]
+    opp_progress = game.size - 1 - state.p2[1] if player==1 else state.p1[1]
 
-    feature_0 = -p1_dist_to_goal
-    feature_1 = p2_dist_to_goal
-    feature_2 = state.p1_numwalls
-    feature_3 = state.p2_numwalls
-    feature_4 = state.p1[1]
-    feature_5 = state.p2[1]
+    feature_0 = -my_dist
+    feature_1 = opp_dist
+    feature_2 = my_walls
+    feature_3 = opp_walls
+    feature_4 = my_progress
+    feature_5 = opp_progress
 
-    if player == 1:
-        value = weights[0] * feature_0 \
-            + weights[1] * feature_1 \
-                + weights[2] * feature_2 \
-                    + weights[3] * feature_3 \
-                        + weights[4] * feature_4 \
-                            + weights[5] * feature_5
-        return value
-
-    else:
-        value = weights[0] * feature_1 \
-            + weights[1] * feature_0 \
-                + weights[3] * feature_2 \
-                    + weights[2] * feature_3 \
-                        + weights[5] * feature_4 \
-                            + weights[4] * feature_5
-            
-        return -value
+    return weights[0] * feature_0 \
+        + weights[1] * feature_1 \
+            + weights[2] * feature_2 \
+                + weights[3] * feature_3 \
+                    + weights[4] * feature_4 \
+                        + weights[5] * feature_5

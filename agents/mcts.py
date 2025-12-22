@@ -124,4 +124,4 @@ class QuoridorMCTSAgent(MCTSAgent):
             raise ValueError('Please enter valid policy for MCTS agent.')
         
     def evaluate(self, state: Any, player: int | str) -> float:
-        return evaluate_state(self.game, state, player, [0.75, 0.5, 0.1, 0.1, 0.05, 0.05])
+        return evaluate_state(self.game, state, player, [0.5, 0.5, 0.1, 0.1, 0.05, 0.05])

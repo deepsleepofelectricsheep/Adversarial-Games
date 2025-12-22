@@ -58,4 +58,4 @@ class AlphaBetaAgent(Agent):
 
 class QuoridorAlphaBetaAgent(AlphaBetaAgent):
     def eval(self, state: Any, player: str | int) -> float:
-        return evaluate_state(self.game, state, player, [0.75, 0.5, 0.1, 0.1, 0.05, 0.05])
+        return evaluate_state(self.game, state, player, [0.5, 0.5, 0.1, 0.1, 0.05, 0.05])
