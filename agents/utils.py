@@ -3,7 +3,10 @@ from heapq import heappush, heappop
 from games.quoridor import State
 
 
-def evaluate_state(game: Any, state: Any, player: str | int) -> float:
+def evaluate_state(game: Any, 
+                   state: Any, 
+                   player: str | int, 
+                   weights: list[float] = [0, 0, 0, 0, 0, 0]) -> float:
 
     def _path_length(game: Any, 
                      p1: Tuple[int, int], 
@@ -70,6 +73,29 @@ def evaluate_state(game: Any, state: Any, player: str | int) -> float:
 
     p1_dist_to_goal = _path_length(game, p1, p2, h_walls, v_walls, player)
     p2_dist_to_goal = _path_length(game, p1, p2, h_walls, v_walls, 2 if player==1 else 1)
+
+    feature_0 = -p1_dist_to_goal
+    feature_1 = p2_dist_to_goal
+    feature_2 = state.p1_numwalls
+    feature_3 = state.p2_numwalls
+    feature_4 = state.p1[1]
+    feature_5 = state.p2[1]
+
     if player == 1:
-        return (- 0.5 * p1_dist_to_goal + 0.75 * p2_dist_to_goal) + 0.5 * state.p1_numwalls / game.numwalls
-    return (- 0.5 * p2_dist_to_goal + 0.75 * p1_dist_to_goal) + 0.5 * state.p2_numwalls / game.numwalls
+        value = weights[0] * feature_0 \
+            + weights[1] * feature_1 \
+                + weights[2] * feature_2 \
+                    + weights[3] * feature_3 \
+                        + weights[4] * feature_4 \
+                            + weights[5] * feature_5
+        return value
+
+    else:
+        value = weights[0] * feature_1 \
+            + weights[1] * feature_0 \
+                + weights[3] * feature_2 \
+                    + weights[2] * feature_3 \
+                        + weights[5] * feature_4 \
+                            + weights[4] * feature_5
+            
+        return -value

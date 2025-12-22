@@ -71,8 +71,17 @@ def evaluate(args: argparse.Namespace) -> None:
                 p1_wins += 1 if game.utility(state) == game.win_bonus else 0
                 break
 
+            if moves > 200:
+                p1_wins += 0.5
+                break
+
         if verbose:
-            print(f'Game #{_ + 1} has ended. Player {"1: " + args.p1 if game.utility(state) == game.win_bonus else "2: " + args.p2} won. The game lasted {moves} moves.')
+            if game.utility(state) == game.win_bonus:
+                print(f'Game #{_ + 1} has ended. Player 1: {args.p1} won. The game lasted {moves} moves.')
+            elif game.utility(state) == -game.win_bonus:
+                print(f'Game #{_ + 1} has ended. Player 2: {args.p2} won. The game lasted {moves} moves.')
+            else:
+                print(f'Game #{_ + 1} has ended. The game length exceeded 200 moves. The game was called a draw.')
             print()
 
         game_length.append(moves)

@@ -21,7 +21,7 @@ class AlphaBetaAgent(Agent):
         def V_alphabeta(s: Any, d: int, a: float = float('-inf'), b: float = float('inf')) -> Tuple[float, Any]:
             # Check base cases:
             if self.game.is_end(s):
-                return self.game.utility(s, self.player), None
+                return self.game.utility(s, self.player) * 100, None
             if d == 0:
                 return self.eval(s, self.player), None
             
@@ -54,8 +54,8 @@ class AlphaBetaAgent(Agent):
     
     def eval(self, state: Any, player: str | int) -> float:
         return 0
-    
+
 
 class QuoridorAlphaBetaAgent(AlphaBetaAgent):
     def eval(self, state: Any, player: str | int) -> float:
-        return evaluate_state(self.game, state, player)
+        return evaluate_state(self.game, state, player, [0.75, 0.5, 0.1, 0.1, 0.05, 0.05])
